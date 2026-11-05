@@ -3,21 +3,27 @@ package nl.bramv.triviaquestionservice.startup;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StartupInfo implements ApplicationRunner {
 
-    private final ServletWebServerApplicationContext context;
+    private final ApplicationContext context;
 
-    public StartupInfo(ServletWebServerApplicationContext context) {
+    public StartupInfo(ApplicationContext context) {
         this.context = context;
     }
 
     @Override
     public void run(ApplicationArguments args) {
 
-        int port = context.getWebServer().getPort();
+        if (!(context instanceof ServletWebServerApplicationContext webContext)) {
+            System.out.println("No servlet web server context available.");
+            return;
+        }
+
+        int port = webContext.getWebServer().getPort();
         String baseUrl = "http://localhost:" + port;
 
         System.out.println("");
