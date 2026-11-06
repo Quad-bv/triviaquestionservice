@@ -8,6 +8,7 @@ class TriviaquestionserviceApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 	}
 
 }
