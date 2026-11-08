@@ -12,35 +12,22 @@ public class TriviaDBExceptionHandler{
 
     private static final Logger log = LoggerFactory.getLogger(TriviaDBExceptionHandler.class);
 
-    @ExceptionHandler (TriviaDBUnreachableException.class)
-    public ProblemDetail handleUnreachable (TriviaDBUnreachableException exception){
-        log.warn("OpenTriviaDB unreachable", exception);
-        return ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, "OpenTriviaDB unreachable");
-    }
-
     @ExceptionHandler (TriviaDBUnavailableException.class)
-    public ProblemDetail handleBadResponse (TriviaDBUnavailableException exception){
+    public ProblemDetail handleUnavailable (TriviaDBUnavailableException exception){
         log.warn("OpenTriviaDB unavailable", exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, "OpenTriviaDB unavailable");
     }
 
-    @ExceptionHandler(TriviaDBException.class)
-    public ProblemDetail handleApiError(TriviaDBException exception) {
+    @ExceptionHandler (TriviaDBUnavailableException.class)
+    public ProblemDetail handeRateLimited (TriviaDBRateLimitException exception){
+        log.warn("OpenTriviaDB received to many requests", exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS, "OpenTriviaDB received to many requests");
+    }
 
-        log.warn("OpenTriviaDB API error: {}", exception.getResponseCode());
-
-        HttpStatus status = switch (exception.getResponseCode()) {
-            case 1 -> HttpStatus.NOT_FOUND;
-            case 2 -> HttpStatus.BAD_REQUEST;
-            case 3, 4 -> HttpStatus.BAD_REQUEST;
-            case 5 -> HttpStatus.SERVICE_UNAVAILABLE;
-            default -> HttpStatus.BAD_GATEWAY;
-        };
-
-        return ProblemDetail.forStatusAndDetail(
-                status,
-                exception.getMessage()
-        );
+    @ExceptionHandler (TriviaDBBadGatewayException.class)
+    public ProblemDetail handleUnreachable (TriviaDBBadGatewayException exception){
+        log.warn("OpenTriviaDB unreachable", exception);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, "OpenTriviaDB bad Gateway");
     }
 }
 

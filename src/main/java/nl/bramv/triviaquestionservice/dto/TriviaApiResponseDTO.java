@@ -6,6 +6,5 @@ import java.util.List;
 
 public record TriviaApiResponseDTO(
         @JsonProperty("response_code") int responseCode,
-        int code,
         List<TriviaQuestionApiDTO> questions) {
 }

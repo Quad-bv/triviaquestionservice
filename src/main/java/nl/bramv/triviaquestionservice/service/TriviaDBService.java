@@ -2,14 +2,15 @@ package nl.bramv.triviaquestionservice.service;
 
 import nl.bramv.triviaquestionservice.dto.TriviaApiResponseDTO;
 import nl.bramv.triviaquestionservice.dto.TriviaQuestionApiDTO;
-import nl.bramv.triviaquestionservice.exception.TriviaDBException;
+import nl.bramv.triviaquestionservice.exception.TriviaDBBadGatewayException;
+import nl.bramv.triviaquestionservice.exception.TriviaDBRateLimitException;
 import nl.bramv.triviaquestionservice.exception.TriviaDBUnavailableException;
-import nl.bramv.triviaquestionservice.exception.TriviaDBUnreachableException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestClientException;
 
 import java.util.List;
 
@@ -32,27 +33,34 @@ public class TriviaDBService {
 
         TriviaApiResponseDTO response;
 
+
         try {
-             response = restClient.get()
+            response = restClient.get()
                     .uri("/api.php?amount={amount}", amount)
                     .retrieve()
                     .body(TriviaApiResponseDTO.class);
-        } catch (ResourceAccessException exception){
+
+
+        } catch (ResourceAccessException exception) {
             throw new TriviaDBUnavailableException(exception);
-        } catch (RestClientResponseException exception){
-            throw new TriviaDBUnreachableException(exception);
+
+        } catch (HttpClientErrorException.TooManyRequests exception) {
+            throw new TriviaDBRateLimitException(exception);
+
+        } catch (RestClientException exception) {
+            throw new TriviaDBBadGatewayException(exception);
         }
 
-        if (response.responseCode() != 0) {
-            throw new TriviaDBException(response.responseCode());
+        //TODO Handle null request from TriviaDB
+        if (response == null)
+        {
+            // throw new TriviaDBBadGatewayException();
         }
 
-        assert response != null;
         return response.questions();
     }
 
-    public boolean CheckFor200ErrorCodes(TriviaApiResponseDTO responseDTO)
-    {
+    public boolean CheckFor200ErrorCodes(TriviaApiResponseDTO responseDTO) {
         return true;
     }
 }
