@@ -9,5 +9,4 @@ public record TriviaQuestionApiDTO(
         String question,
         String correct_answer,
         List<String> incorrect_answers) {
-
 }
