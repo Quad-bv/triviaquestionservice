@@ -33,7 +33,6 @@ public class TriviaDBService {
 
         TriviaApiResponseDTO response;
 
-
         try {
             response = restClient.get()
                     .uri("/api.php?amount={amount}", amount)

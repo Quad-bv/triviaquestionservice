@@ -2,6 +2,7 @@ package nl.bramv.triviaquestionservice.controller;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
 import nl.bramv.triviaquestionservice.model.QuestionsResponse;
 import nl.bramv.triviaquestionservice.service.QuestionsService;
@@ -30,6 +31,7 @@ public class QuestionsController {
     @GetMapping("/questions")
     public List<QuestionsResponse> GET(
             @Positive
+            @Max(50)
             @RequestParam(defaultValue = "1") int amount
     ) {
         return questionsService.get(amount);
