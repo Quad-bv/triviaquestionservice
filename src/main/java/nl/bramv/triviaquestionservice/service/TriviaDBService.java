@@ -51,16 +51,11 @@ public class TriviaDBService {
             throw new TriviaDBBadGatewayException(exception);
         }
 
-        //TODO Handle null request from TriviaDB
-        if (response == null)
+        if (response == null || response.questions() == null)
         {
-            // throw new TriviaDBBadGatewayException();
+            throw new TriviaDBBadGatewayException("OpenTriviaDB returned no questions");
         }
 
         return response.questions();
-    }
-
-    public boolean CheckFor200ErrorCodes(TriviaApiResponseDTO responseDTO) {
-        return true;
     }
 }

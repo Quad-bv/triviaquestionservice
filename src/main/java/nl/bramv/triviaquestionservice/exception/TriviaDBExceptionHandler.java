@@ -18,7 +18,7 @@ public class TriviaDBExceptionHandler{
         return ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, "OpenTriviaDB unavailable");
     }
 
-    @ExceptionHandler (TriviaDBUnavailableException.class)
+    @ExceptionHandler (TriviaDBRateLimitException.class)
     public ProblemDetail handeRateLimited (TriviaDBRateLimitException exception){
         log.warn("OpenTriviaDB received to many requests", exception);
         return ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS, "OpenTriviaDB received to many requests");

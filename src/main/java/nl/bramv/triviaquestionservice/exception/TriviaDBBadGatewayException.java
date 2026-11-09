@@ -4,4 +4,8 @@ public class TriviaDBBadGatewayException extends RuntimeException {
     public TriviaDBBadGatewayException(Throwable cause){
         super("OpenTriviaDB bad Gateway", cause);
     }
+
+    public TriviaDBBadGatewayException(String message) {
+        super(message);
+    }
 }
