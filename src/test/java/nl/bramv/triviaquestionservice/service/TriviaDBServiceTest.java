@@ -1,3 +1,4 @@
+
 package nl.bramv.triviaquestionservice.service;
 
 import nl.bramv.triviaquestionservice.dto.TriviaQuestionApiDTO;
@@ -5,6 +6,7 @@ import nl.bramv.triviaquestionservice.exception.TriviaDBBadGatewayException;
 import nl.bramv.triviaquestionservice.exception.TriviaDBRateLimitException;
 import nl.bramv.triviaquestionservice.exception.TriviaDBUnavailableException;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -20,11 +22,22 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 class TriviaDBServiceTest {
+
+    private MockRestServiceServer mockServer;
+    private TriviaDBService triviaDBService;
+
+    @BeforeEach
+    void setUp() {
+        RestClient.Builder builder = RestClient.builder();
+
+        mockServer = MockRestServiceServer.bindTo(builder).build();
+
+        triviaDBService = new TriviaDBService(builder, "http://localhost");
+    }
 
     @Test
     void fetchQuestions_returnsQuestions_whenRequestIsSuccessful() {
@@ -38,14 +51,6 @@ class TriviaDBServiceTest {
                 "4",
                 List.of("3", "5", "6")
         );
-
-        RestClient.Builder builder = RestClient.builder();
-
-        MockRestServiceServer mockServer =
-                MockRestServiceServer.bindTo(builder).build();
-
-        TriviaDBService triviaDBService =
-                new TriviaDBService(builder, "http://localhost");
 
         mockServer.expect(requestTo("http://localhost/api.php?amount=1"))
                 .andExpect(method(HttpMethod.GET))
@@ -78,31 +83,21 @@ class TriviaDBServiceTest {
         assertEquals(expectedQuestion, result.getFirst());
 
         mockServer.verify();
-
     }
 
     @Test
     void fetchQuestions_throwsUnavailable_whenConnectionFails() {
 
         // Arrange
-        RestClient.Builder builder = RestClient.builder();
-
-        MockRestServiceServer mockServer =
-                MockRestServiceServer.bindTo(builder).build();
-
-        TriviaDBService triviaDBService =
-                new TriviaDBService(builder, "http://localhost");
-
         mockServer.expect(requestTo("http://localhost/api.php?amount=1"))
                 .andRespond(withException(new IOException("Connection failed")));
 
-        // Act
+        // Act & Assert
         assertThrows(
                 TriviaDBUnavailableException.class,
                 () -> triviaDBService.fetchQuestions(1)
         );
 
-        // Assert
         mockServer.verify();
     }
 
@@ -110,24 +105,15 @@ class TriviaDBServiceTest {
     void fetchQuestions_throwsRateLimit_whenTriviaDBReturns429() {
 
         // Arrange
-        RestClient.Builder builder = RestClient.builder();
-
-        MockRestServiceServer mockServer =
-                MockRestServiceServer.bindTo(builder).build();
-
-        TriviaDBService triviaDBService =
-                new TriviaDBService(builder, "http://localhost");
-
         mockServer.expect(requestTo("http://localhost/api.php?amount=1"))
                 .andRespond(withStatus(HttpStatus.TOO_MANY_REQUESTS));
 
-        // Act
+        // Act & Assert
         assertThrows(
                 TriviaDBRateLimitException.class,
                 () -> triviaDBService.fetchQuestions(1)
         );
 
-        // Assert
         mockServer.verify();
     }
 
@@ -136,14 +122,6 @@ class TriviaDBServiceTest {
     void fetchQuestions_throwsBadGateway_whenTriviaDBReturnsHttpError(int statusCode) {
 
         // Arrange
-        RestClient.Builder builder = RestClient.builder();
-
-        MockRestServiceServer mockServer =
-                MockRestServiceServer.bindTo(builder).build();
-
-        TriviaDBService triviaDBService =
-                new TriviaDBService(builder, "http://localhost");
-
         mockServer.expect(requestTo("http://localhost/api.php?amount=1"))
                 .andRespond(withStatus(HttpStatusCode.valueOf(statusCode)));
 
@@ -163,24 +141,15 @@ class TriviaDBServiceTest {
     void fetchQuestions_throwsBadGateway_whenTriviaDBReturnsNullResponse() {
 
         // Arrange
-        RestClient.Builder builder = RestClient.builder();
-
-        MockRestServiceServer mockServer =
-                MockRestServiceServer.bindTo(builder).build();
-
-        TriviaDBService triviaDBService =
-                new TriviaDBService(builder, "http://localhost");
-
         mockServer.expect(requestTo("http://localhost/api.php?amount=1"))
                 .andRespond(withSuccess("", MediaType.APPLICATION_JSON));
 
-        // Act
+        // Act & Assert
         assertThrows(
                 TriviaDBBadGatewayException.class,
                 () -> triviaDBService.fetchQuestions(1)
         );
 
-        // Assert
         mockServer.verify();
     }
 
@@ -188,14 +157,6 @@ class TriviaDBServiceTest {
     void fetchQuestions_throwsBadGateway_whenTriviaDBReturnsNullQuestions() {
 
         // Arrange
-        RestClient.Builder builder = RestClient.builder();
-
-        MockRestServiceServer mockServer =
-                MockRestServiceServer.bindTo(builder).build();
-
-        TriviaDBService triviaDBService =
-                new TriviaDBService(builder, "http://localhost");
-
         mockServer.expect(requestTo("http://localhost/api.php?amount=1"))
                 .andRespond(withSuccess(
                         """
@@ -207,13 +168,12 @@ class TriviaDBServiceTest {
                         MediaType.APPLICATION_JSON
                 ));
 
-        // Act
+        // Act & Assert
         assertThrows(
                 TriviaDBBadGatewayException.class,
                 () -> triviaDBService.fetchQuestions(1)
         );
 
-        // Assert
         mockServer.verify();
     }
 }
