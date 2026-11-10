@@ -11,7 +11,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.util.HtmlUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,6 +57,30 @@ public class TriviaDBService {
             throw new TriviaDBBadGatewayException("OpenTriviaDB returned no questions");
         }
 
-        return response.questions();
+        List<TriviaQuestionApiDTO> decodedQuestions = new ArrayList<>();
+
+        for (TriviaQuestionApiDTO question : response.questions()) {
+            decodedQuestions.add(decodeHTML(question));
+        }
+
+        return decodedQuestions;
+    }
+
+    private TriviaQuestionApiDTO decodeHTML(TriviaQuestionApiDTO question) {
+
+        List<String> decodedIncorrectAnswers = new ArrayList<>();
+
+        for (String incorrectAnswer : question.incorrect_answers()) {
+            decodedIncorrectAnswers.add(HtmlUtils.htmlUnescape(incorrectAnswer));
+        }
+
+        return new TriviaQuestionApiDTO(
+                question.type(),
+                question.difficulty(),
+                HtmlUtils.htmlUnescape(question.category()),
+                HtmlUtils.htmlUnescape(question.question()),
+                HtmlUtils.htmlUnescape(question.correct_answer()),
+                decodedIncorrectAnswers
+        );
     }
 }

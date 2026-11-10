@@ -29,7 +29,7 @@ public class QuestionsController {
             @ApiResponse(responseCode = "503", description = "Open Trivia DB is unreachable")
     })
     @GetMapping("/questions")
-    public List<QuestionsResponse> GET(
+    public List<QuestionsResponse> getQuestions(
             @Positive
             @Max(50)
             @RequestParam(defaultValue = "1") int amount

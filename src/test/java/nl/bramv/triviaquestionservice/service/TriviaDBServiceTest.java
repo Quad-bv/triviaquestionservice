@@ -86,6 +86,52 @@ class TriviaDBServiceTest {
     }
 
     @Test
+    void fetchQuestions_returnsDecodedQuestions_whenRequestIsSuccessful() {
+
+        // Arrange
+        TriviaQuestionApiDTO expectedQuestion = new TriviaQuestionApiDTO(
+                "multiple",
+                "easy",
+                "General Knowledge",
+                "What is 2 + 2?",
+                "4",
+                List.of("3", "5", "π ≈ 3.14")   // π ≈ 3.14
+        );
+
+        mockServer.expect(requestTo("http://localhost/api.php?amount=1"))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(
+                        """
+                        {
+                            "response_code": 0,
+                            "results": [
+                                {
+                                    "type": "multiple",
+                                    "difficulty": "easy",
+                                    "category": "General Knowledge",
+                                    "question": "What is 2 &#43; 2?",
+                                    "correct_answer": "&#52;",
+                                    "incorrect_answers": ["3", "5", "&pi; &asymp; 3.14"]
+                                }
+                            ]
+                        }
+                        """,
+                        MediaType.APPLICATION_JSON
+                ));
+
+        // Act
+        List<TriviaQuestionApiDTO> result =
+                triviaDBService.fetchQuestions(1);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(expectedQuestion, result.getFirst());
+
+        mockServer.verify();
+    }
+
+    @Test
     void fetchQuestions_throwsUnavailable_whenConnectionFails() {
 
         // Arrange

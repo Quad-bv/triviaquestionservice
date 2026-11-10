@@ -34,6 +34,5 @@ public class HashService {
         } catch (GeneralSecurityException exception){
             throw new IllegalStateException("Unable to generate hash", exception);
         }
-
     }
 }

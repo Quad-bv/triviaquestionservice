@@ -5,6 +5,7 @@ import nl.bramv.triviaquestionservice.model.QuestionsResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,7 +34,10 @@ public class QuestionsService {
         String verificationToken = hashService.hash(question.correct_answer());
 
         List<String> answers = new ArrayList<>(question.incorrect_answers());
+        
         answers.add(question.correct_answer());
+
+        Collections.shuffle(answers);
 
         return new QuestionsResponse(
                 question.type(),
