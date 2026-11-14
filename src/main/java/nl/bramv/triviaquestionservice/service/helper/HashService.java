@@ -1,4 +1,4 @@
-package nl.bramv.triviaquestionservice.service;
+package nl.bramv.triviaquestionservice.service.helper;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

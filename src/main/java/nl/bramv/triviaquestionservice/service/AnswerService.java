@@ -2,6 +2,7 @@ package nl.bramv.triviaquestionservice.service;
 
 import nl.bramv.triviaquestionservice.model.CheckAnswerResponse;
 import nl.bramv.triviaquestionservice.model.CheckAnswersRequest;
+import nl.bramv.triviaquestionservice.service.helper.HashService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,7 +12,6 @@ public class AnswerService {
     public AnswerService(HashService hashService) {
         this.hashService = hashService;
     }
-
 
     public CheckAnswerResponse checkAnswer(CheckAnswersRequest request){
         return new CheckAnswerResponse(

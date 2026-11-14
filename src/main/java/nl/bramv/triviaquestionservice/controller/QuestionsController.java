@@ -3,7 +3,10 @@ package nl.bramv.triviaquestionservice.controller;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Min;
+import nl.bramv.triviaquestionservice.enums.Difficulty;
+import nl.bramv.triviaquestionservice.enums.QuestionType;
+import nl.bramv.triviaquestionservice.model.QuestionsRequest;
 import nl.bramv.triviaquestionservice.model.QuestionsResponse;
 import nl.bramv.triviaquestionservice.service.QuestionsService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,8 @@ public class QuestionsController {
         this.questionsService = questionsService;
     }
 
+    //TODO expand to triviaBD functionality
+
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Questions returned"),
             @ApiResponse(responseCode = "400", description = "Invalid amount"),
@@ -29,11 +34,15 @@ public class QuestionsController {
             @ApiResponse(responseCode = "503", description = "Open Trivia DB is unreachable")
     })
     @GetMapping("/questions")
-    public List<QuestionsResponse> getQuestions(
-            @Positive
-            @Max(50)
-            @RequestParam(defaultValue = "1") int amount
-    ) {
-        return questionsService.get(amount);
+    public List<QuestionsResponse> getQuestions
+            (
+            @RequestParam(defaultValue = "1") @Min(1) @Max(50) int amount,
+            @RequestParam(required = false) Integer category,
+            @RequestParam(required = false) Difficulty difficulty,
+            @RequestParam(required = false) QuestionType type,
+            @RequestParam(required = false) String token
+            )
+    {
+        return questionsService.get(new QuestionsRequest(amount, category, difficulty, type, token));
     }
 }

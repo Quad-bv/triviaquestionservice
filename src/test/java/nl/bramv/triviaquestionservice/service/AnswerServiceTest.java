@@ -2,6 +2,7 @@ package nl.bramv.triviaquestionservice.service;
 
 import nl.bramv.triviaquestionservice.model.CheckAnswerResponse;
 import nl.bramv.triviaquestionservice.model.CheckAnswersRequest;
+import nl.bramv.triviaquestionservice.service.helper.HashService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

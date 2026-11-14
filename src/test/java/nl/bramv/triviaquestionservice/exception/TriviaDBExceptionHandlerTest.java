@@ -1,5 +1,6 @@
 package nl.bramv.triviaquestionservice.exception;
 
+import nl.bramv.triviaquestionservice.exception.questionsprovider.handler.QuestionsProviderExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -16,10 +17,35 @@ class TriviaDBExceptionHandlerTest {
 
     private MockMvc mockMvc;
 
+    @RestController
+    static class TestController {
+
+        @GetMapping("/test/unavailable")
+        void unavailable() {
+            throw new TriviaDBUnavailableException(
+                    new RuntimeException("Connection failed")
+            );
+        }
+
+        @GetMapping("/test/rate-limited")
+        void rateLimited() {
+            throw new TriviaDBRateLimitException(
+                    new RuntimeException("Too many requests")
+            );
+        }
+
+        @GetMapping("/test/unreachable")
+        void unreachable() {
+            throw new TriviaDBBadGatewayException(
+                    new RuntimeException("Bad gateway")
+            );
+        }
+    }
+
     @BeforeEach
     void setUp() {
         mockMvc = standaloneSetup(new TestController())
-                .setControllerAdvice(new TriviaDBExceptionHandler())
+                .setControllerAdvice(new QuestionsProviderExceptionHandler())
                 .build();
     }
 
@@ -69,30 +95,5 @@ class TriviaDBExceptionHandlerTest {
         result.andExpect(status().isBadGateway())
                 .andExpect(jsonPath("$.detail")
                         .value("OpenTriviaDB bad Gateway"));
-    }
-
-    @RestController
-    static class TestController {
-
-        @GetMapping("/test/unavailable")
-        void unavailable() {
-            throw new TriviaDBUnavailableException(
-                    new RuntimeException("Connection failed")
-            );
-        }
-
-        @GetMapping("/test/rate-limited")
-        void rateLimited() {
-            throw new TriviaDBRateLimitException(
-                    new RuntimeException("Too many requests")
-            );
-        }
-
-        @GetMapping("/test/unreachable")
-        void unreachable() {
-            throw new TriviaDBBadGatewayException(
-                    new RuntimeException("Bad gateway")
-            );
-        }
     }
 }
