@@ -54,6 +54,10 @@ public class OpenTriviaDBProvider implements IQuestionsProvider {
             throw exceptionHandler.handleRestClientException(exception);
         }
 
+        if (response.responseCode() != 0) {
+            throw exceptionHandler.handleResponseCode(response.responseCode());
+        }
+
         return response.results()
                 .stream()
                 .map(mapper::toDTO)

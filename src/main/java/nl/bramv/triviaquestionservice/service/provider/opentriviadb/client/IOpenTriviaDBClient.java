@@ -8,7 +8,7 @@ import org.springframework.web.service.annotation.HttpExchange;
 @HttpExchange("/")
 public interface IOpenTriviaDBClient {
 
-    @GetExchange("/api.php")
+    @GetExchange("api.php")
     OpenTriviaDBResponse getQuestions(
             @RequestParam int amount,
             @RequestParam(required = false) Integer category,

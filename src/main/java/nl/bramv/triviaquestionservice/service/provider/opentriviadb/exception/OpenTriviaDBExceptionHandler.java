@@ -60,7 +60,7 @@ public class OpenTriviaDBExceptionHandler {
         }
     }
 
-    private RuntimeException handleResponseCode(int responseCode) {
+    public RuntimeException handleResponseCode(int responseCode) {
         return switch (responseCode) {
             case 1 -> new QuestionsProviderNoResultsException(
                     properties.providerName(),
