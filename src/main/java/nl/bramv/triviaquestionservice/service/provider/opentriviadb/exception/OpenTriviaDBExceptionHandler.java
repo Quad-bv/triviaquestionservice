@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.service.provider.opentriviadb.exception;
+package nl.bramv.triviaquestionservice.service.provider.opentriviadb.exception;
 
 import nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions.QuestionsProviderBadGatewayException;
 import nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions.QuestionsProviderNoResultsException;

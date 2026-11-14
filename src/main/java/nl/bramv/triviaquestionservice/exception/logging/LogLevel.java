@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.exception.logging;
+package nl.bramv.triviaquestionservice.exception.logging;
 
 public enum LogLevel {
     DEBUG,

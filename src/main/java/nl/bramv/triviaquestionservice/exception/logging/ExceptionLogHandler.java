@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.exception.logging;
+package nl.bramv.triviaquestionservice.exception.logging;
 
 import nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions.QuestionsProviderException;
 import org.slf4j.Logger;

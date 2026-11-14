@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.service.provider.opentriviadb.client;
+package nl.bramv.triviaquestionservice.service.provider.opentriviadb.client;
 
 import nl.bramv.triviaquestionservice.service.provider.opentriviadb.model.OpenTriviaDBResponse;
 import org.springframework.web.bind.annotation.RequestParam;

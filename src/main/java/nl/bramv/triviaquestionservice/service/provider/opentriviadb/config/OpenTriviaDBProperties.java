@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.service.provider.opentriviadb.config;
+package nl.bramv.triviaquestionservice.service.provider.opentriviadb.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

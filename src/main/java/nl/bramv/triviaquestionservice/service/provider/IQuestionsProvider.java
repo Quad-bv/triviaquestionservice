@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.service.provider;
+package nl.bramv.triviaquestionservice.service.provider;
 
 import nl.bramv.triviaquestionservice.dto.QuestionDTO;
 import nl.bramv.triviaquestionservice.model.QuestionsRequest;

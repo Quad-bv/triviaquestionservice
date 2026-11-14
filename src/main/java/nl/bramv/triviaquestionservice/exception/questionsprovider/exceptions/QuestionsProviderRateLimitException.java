@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions;
+package nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions;
 
 import nl.bramv.triviaquestionservice.exception.logging.LogLevel;
 

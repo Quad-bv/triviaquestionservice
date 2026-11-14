@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.service.provider.opentriviadb.config;
+package nl.bramv.triviaquestionservice.service.provider.opentriviadb.config;
 
 import nl.bramv.triviaquestionservice.service.provider.opentriviadb.client.IOpenTriviaDBClient;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.service.provider.opentriviadb.model;
+package nl.bramv.triviaquestionservice.service.provider.opentriviadb.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,4 +1,4 @@
-﻿package nl.bramv.triviaquestionservice.service.provider.opentriviadb.mapper;
+package nl.bramv.triviaquestionservice.service.provider.opentriviadb.mapper;
 
 import nl.bramv.triviaquestionservice.dto.QuestionDTO;
 import nl.bramv.triviaquestionservice.enums.Difficulty;

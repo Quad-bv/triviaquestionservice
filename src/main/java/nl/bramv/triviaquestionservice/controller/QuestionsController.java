@@ -24,8 +24,6 @@ public class QuestionsController {
         this.questionsService = questionsService;
     }
 
-    //TODO expand to triviaBD functionality
-
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Questions returned"),
             @ApiResponse(responseCode = "400", description = "Invalid amount"),
