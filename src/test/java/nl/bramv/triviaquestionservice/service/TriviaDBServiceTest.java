@@ -1,7 +1,7 @@
 //
 //package nl.bramv.triviaquestionservice.service;
 //
-//import nl.bramv.triviaquestionservice.dto.QuestionDTO;
+//import nl.bramv.triviaquestionservice.model.Question;
 //import nl.bramv.triviaquestionservice.exception.TriviaDBBadGatewayException;
 //import nl.bramv.triviaquestionservice.exception.TriviaDBRateLimitException;
 //import nl.bramv.triviaquestionservice.exception.TriviaDBUnavailableException;
@@ -44,7 +44,7 @@
 //    void fetchQuestions_returnsQuestions_whenRequestIsSuccessful() {
 //
 //        // Arrange
-//        QuestionDTO expectedQuestion = new QuestionDTO(
+//        Question expectedQuestion = new Question(
 //                "multiple",
 //                "easy",
 //                "General Knowledge",
@@ -75,7 +75,7 @@
 //                ));
 //
 //        // Act
-//        List<QuestionDTO> result =
+//        List<Question> result =
 //                openTriviaDBProvider.fetchQuestions(1);
 //
 //        // Assert
@@ -90,7 +90,7 @@
 //    void fetchQuestions_returnsDecodedQuestions_whenRequestIsSuccessful() {
 //
 //        // Arrange
-//        QuestionDTO expectedQuestion = new QuestionDTO(
+//        Question expectedQuestion = new Question(
 //                "multiple",
 //                "easy",
 //                "General Knowledge",
@@ -121,7 +121,7 @@
 //                ));
 //
 //        // Act
-//        List<QuestionDTO> result =
+//        List<Question> result =
 //                openTriviaDBProvider.fetchQuestions(1);
 //
 //        // Assert

@@ -2,6 +2,7 @@ package nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions;
 
 import nl.bramv.triviaquestionservice.exception.logging.LogLevel;
 
+// Indicates that the provider returned an invalid or unexpected response.
 public class QuestionsProviderBadGatewayException extends QuestionsProviderException {
 
     public QuestionsProviderBadGatewayException(String providerName, String message, Throwable cause) {
@@ -9,6 +10,6 @@ public class QuestionsProviderBadGatewayException extends QuestionsProviderExcep
     }
 
     public QuestionsProviderBadGatewayException(String providerName, String message) {
-        super(providerName, message,LogLevel.ERROR, null);
+        this(providerName, message, null);
     }
 }

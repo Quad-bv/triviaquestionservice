@@ -2,6 +2,7 @@ package nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions;
 
 import nl.bramv.triviaquestionservice.exception.logging.LogLevel;
 
+// Indicates that the provider rejected the request because its rate limit was reached
 public class QuestionsProviderRateLimitException extends QuestionsProviderException {
 
     public QuestionsProviderRateLimitException(String providerName, String message, Throwable cause) {
@@ -9,6 +10,6 @@ public class QuestionsProviderRateLimitException extends QuestionsProviderExcept
     }
 
     public QuestionsProviderRateLimitException(String providerName, String message) {
-        super(providerName, message, LogLevel.INFO, null);
+        this(providerName, message, null);
     }
 }

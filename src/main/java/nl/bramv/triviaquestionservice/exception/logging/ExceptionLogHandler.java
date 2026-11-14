@@ -10,6 +10,7 @@ public class ExceptionLogHandler {
     private static final Logger log =
             LoggerFactory.getLogger(ExceptionLogHandler.class);
 
+    // Logs provider exceptions using the severity defined by the exception.
     public void log(QuestionsProviderException exception) {
 
         String message = "Questions provider '{}' failed: {}";

@@ -1,25 +1,24 @@
 package nl.bramv.triviaquestionservice.service.mapping;
 
-import nl.bramv.triviaquestionservice.dto.QuestionDTO;
+import nl.bramv.triviaquestionservice.model.Question;
 import nl.bramv.triviaquestionservice.model.QuestionsResponse;
-import nl.bramv.triviaquestionservice.service.helper.HashService;
-import org.springframework.stereotype.Service;
+import nl.bramv.triviaquestionservice.service.helper.IAnswerVerificationService;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Service
+@Component
 public class QuestionsResponseMapper {
 
-    private final HashService hashService;
+    private final IAnswerVerificationService answerVerificationService;
 
-    public QuestionsResponseMapper(HashService hashService) {
-        this.hashService = hashService;
+    public QuestionsResponseMapper(IAnswerVerificationService answerVerificationService) {
+        this.answerVerificationService = answerVerificationService;
     }
 
-    public QuestionsResponse toResponse(QuestionDTO question) {
-
+    public QuestionsResponse toResponse(Question question) {
 
         List<String> answers = new ArrayList<>(question.incorrectAnswers());
 
@@ -32,9 +31,9 @@ public class QuestionsResponseMapper {
                 question.difficulty(),
                 question.category(),
                 question.question(),
-
-                // Hash the correct answer as a verification token so it can be verified later
-                hashService.hash(question.correctAnswer()),
+                answerVerificationService.generateToken(
+                        question.question(),
+                        question.correctAnswer()),
                 answers
         );
     }

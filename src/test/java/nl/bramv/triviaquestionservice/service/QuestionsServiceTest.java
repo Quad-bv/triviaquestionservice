@@ -1,9 +1,9 @@
 //package nl.bramv.triviaquestionservice.service;
 //
-//import nl.bramv.triviaquestionservice.dto.QuestionDTO;
+//import nl.bramv.triviaquestionservice.model.Question;
 //import nl.bramv.triviaquestionservice.model.QuestionsResponse;
 //import nl.bramv.triviaquestionservice.service.provider.opentriviadb.OpenTriviaDBProvider;
-//import nl.bramv.triviaquestionservice.service.helper.HashService;
+//import nl.bramv.triviaquestionservice.service.helper.AnswerVerificationService;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.params.ParameterizedTest;
@@ -21,11 +21,11 @@
 //public class QuestionsServiceTest {
 //
 //    private OpenTriviaDBProvider openTriviaDBProvider;
-//    private HashService hashService;
+//    private AnswerVerificationService hashService;
 //    private QuestionsService questionsService;
 //
-//    private QuestionDTO mathQuestion() {
-//        return new QuestionDTO(
+//    private Question mathQuestion() {
+//        return new Question(
 //                "multiple",
 //                "easy",
 //                "General Knowledge",
@@ -38,7 +38,7 @@
 //    @BeforeEach
 //    void setUp() {
 //        openTriviaDBProvider = mock(OpenTriviaDBProvider.class);
-//        hashService = mock(HashService.class);
+//        hashService = mock(AnswerVerificationService.class);
 //        questionsService = new QuestionsService(openTriviaDBProvider, hashService);
 //    }
 //

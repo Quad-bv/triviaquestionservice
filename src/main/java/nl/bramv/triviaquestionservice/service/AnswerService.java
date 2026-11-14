@@ -2,20 +2,21 @@ package nl.bramv.triviaquestionservice.service;
 
 import nl.bramv.triviaquestionservice.model.CheckAnswerResponse;
 import nl.bramv.triviaquestionservice.model.CheckAnswersRequest;
-import nl.bramv.triviaquestionservice.service.helper.HashService;
+import nl.bramv.triviaquestionservice.service.helper.IAnswerVerificationService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AnswerService {
-    private final HashService hashService;
+    private final IAnswerVerificationService answerVerificationService;
 
-    public AnswerService(HashService hashService) {
-        this.hashService = hashService;
+    public AnswerService(IAnswerVerificationService answerVerificationService) {
+        this.answerVerificationService = answerVerificationService;
     }
 
+    // Checks the submitted answer using the configured verification strategy.
     public CheckAnswerResponse checkAnswer(CheckAnswersRequest request){
         return new CheckAnswerResponse(
-                hashService.hash(request.selectedAnswer()).equals(request.verificationToken())
+                answerVerificationService.checkAnswer(request.question(), request.selectedAnswer(), request.verificationToken())
         );
     }
 }

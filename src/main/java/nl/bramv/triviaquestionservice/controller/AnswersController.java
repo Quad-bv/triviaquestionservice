@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+// Handles requests for checking submitted answers.
 @RestController
 public class AnswersController {
 
@@ -25,7 +26,7 @@ public class AnswersController {
             @ApiResponse(responseCode = "400", description = "Invalid request: selectedAnswer or verificationToken is missing or blank")
     })
     @PostMapping("/checkanswers")
-    public CheckAnswerResponse checkAnswers(@Valid @RequestBody CheckAnswersRequest request){
+    public CheckAnswerResponse checkAnswer(@Valid @RequestBody CheckAnswersRequest request){
         return answerService.checkAnswer(request);
     }
 }

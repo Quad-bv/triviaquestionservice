@@ -16,6 +16,7 @@ public class QuestionsProviderExceptionHandler {
         this.logHandler = logHandler;
     }
 
+    // Handles provider exceptions that do not have a more specific HTTP mapping.
     @ExceptionHandler(QuestionsProviderException.class)
     public ProblemDetail handleProviderFailure(QuestionsProviderException exception) {
         return problem(HttpStatus.BAD_GATEWAY, exception);
@@ -49,6 +50,7 @@ public class QuestionsProviderExceptionHandler {
         return problem(HttpStatus.BAD_GATEWAY, exception);
     }
 
+    // Logs the exception and creates the corresponding HTTP error response.
     private ProblemDetail problem(HttpStatus status, QuestionsProviderException exception) {
 
         logHandler.log(exception);

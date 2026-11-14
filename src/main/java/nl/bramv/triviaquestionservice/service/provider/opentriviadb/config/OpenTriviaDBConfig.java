@@ -32,7 +32,6 @@ public class OpenTriviaDBConfig {
             RestClient openTriviaDBRestClient
     )
     {
-
         // Adapts RestClient so it can be used by Spring's HTTP service proxy.
         RestClientAdapter adapter =
                 RestClientAdapter.create(openTriviaDBRestClient);

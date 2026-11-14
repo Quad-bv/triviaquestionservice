@@ -13,4 +13,7 @@ public record QuestionsResponse(
         String verificationToken,
         List<String> answers
 ) {
+    public QuestionsResponse{
+        answers = List.copyOf(answers);
+    }
 }

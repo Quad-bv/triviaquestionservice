@@ -2,6 +2,7 @@ package nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions;
 
 import nl.bramv.triviaquestionservice.exception.logging.LogLevel;
 
+// Base exception for failures originating from a question provider.
 public abstract class QuestionsProviderException extends RuntimeException {
     private final String providerName;
     private final LogLevel logLevel;
