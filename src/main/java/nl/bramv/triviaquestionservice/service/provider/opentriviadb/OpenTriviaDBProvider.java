@@ -70,9 +70,15 @@ public class OpenTriviaDBProvider implements IQuestionsProvider {
         if (response == null) {
             throw exceptionMapper.emptyResponse();
         }
+
         if (response.responseCode() != 0) {
             throw exceptionMapper.handleResponseCode(response.responseCode());
         }
+
+        if (response.results() == null) {
+            throw exceptionMapper.emptyResponse();
+        }
+
         if (response.results().isEmpty()) {
             throw exceptionMapper.noResults();
         }

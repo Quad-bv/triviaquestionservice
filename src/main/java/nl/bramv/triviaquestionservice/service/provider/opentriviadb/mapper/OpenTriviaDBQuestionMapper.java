@@ -47,7 +47,7 @@ public class OpenTriviaDBQuestionMapper {
         }
     }
 
-    // OpenTriviaDB returns HTML-encoded text which need to be decoded.
+    // OpenTriviaDB returns HTML-encoded text that needs to be decoded.
     private String decode(String value, String field) {
         if (value == null) {
             throw new IllegalArgumentException("Missing " + field);
