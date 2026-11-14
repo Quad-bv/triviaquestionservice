@@ -1,6 +1,5 @@
 package nl.bramv.triviaquestionservice.model;
 
-import nl.bramv.triviaquestionservice.enums.Category;
 import nl.bramv.triviaquestionservice.enums.Difficulty;
 import nl.bramv.triviaquestionservice.enums.QuestionType;
 
