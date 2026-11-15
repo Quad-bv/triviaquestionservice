@@ -4,11 +4,11 @@ import nl.bramv.triviaquestionservice.exception.logging.LogLevel;
 import nl.bramv.triviaquestionservice.exception.logging.ILoggableException;
 
 // Base exception for failures originating from a question provider.
-public abstract class QuestionsProviderExceptionI extends RuntimeException implements ILoggableException {
+public abstract class QuestionsProviderException extends RuntimeException implements ILoggableException {
     private final String providerName;
     private final LogLevel logLevel;
 
-    protected QuestionsProviderExceptionI(String providerName, String message, LogLevel logLevel, Throwable cause) {
+    protected QuestionsProviderException(String providerName, String message, LogLevel logLevel, Throwable cause) {
         super(message, cause);
         this.providerName = providerName;
         this.logLevel = logLevel;

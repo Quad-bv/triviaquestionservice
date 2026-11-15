@@ -59,20 +59,20 @@ class ApplicationExceptionLoggerTest {
     static Stream<LoggingScenario> loggingScenarios() {
         return Stream.of(
                 new LoggingScenario(
-                        new DebugProviderExceptionI(PROVIDER_NAME, "Debug failure"),
+                        new DebugProviderException(PROVIDER_NAME, "Debug failure"),
                         Level.DEBUG
                 ),
                 new LoggingScenario(
-                        new QuestionsProviderRateLimitExceptionI(
+                        new QuestionsProviderRateLimitException(
                                 PROVIDER_NAME, "Rate limit reached"),
                         Level.INFO
                 ),
                 new LoggingScenario(
-                        new WarnProviderExceptionI(PROVIDER_NAME, "Warning"),
+                        new WarnProviderException(PROVIDER_NAME, "Warning"),
                         Level.WARN
                 ),
                 new LoggingScenario(
-                        new QuestionsProviderUnavailableExceptionI(
+                        new QuestionsProviderUnavailableException(
                                 PROVIDER_NAME, "Unavailable"),
                         Level.ERROR
                 )
@@ -134,20 +134,20 @@ class ApplicationExceptionLoggerTest {
     }
 
     private record LoggingScenario(
-            QuestionsProviderExceptionI exception,
+            QuestionsProviderException exception,
             Level expectedLevel
     ) {}
 
     // Test-only exceptions to cover DEBUG and WARN logging levels,
     // which are not represented by the production provider exceptions.
-    private static class DebugProviderExceptionI extends QuestionsProviderExceptionI {
-        DebugProviderExceptionI(String providerName, String message) {
+    private static class DebugProviderException extends QuestionsProviderException {
+        DebugProviderException(String providerName, String message) {
             super(providerName, message, LogLevel.DEBUG, null);
         }
     }
 
-    private static class WarnProviderExceptionI extends QuestionsProviderExceptionI {
-        WarnProviderExceptionI(String providerName, String message) {
+    private static class WarnProviderException extends QuestionsProviderException {
+        WarnProviderException(String providerName, String message) {
             super(providerName, message, LogLevel.WARN, null);
         }
     }

@@ -1,3 +1,4 @@
+
 package nl.bramv.triviaquestionservice.service.provider.opentriviadb.config;
 
 import nl.bramv.triviaquestionservice.service.provider.opentriviadb.client.IOpenTriviaDBClient;
@@ -5,9 +6,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+
+import java.net.http.HttpClient;
 
 @Configuration
 @EnableConfigurationProperties(OpenTriviaDBProperties.class)
@@ -20,8 +24,17 @@ public class OpenTriviaDBConfig {
             RestClient.Builder builder,
             OpenTriviaDBProperties properties) {
 
+        // Timeouts keep a slow or unresponsive provider from blocking request threads.
+        HttpClient httpClient = HttpClient.newBuilder()
+                .connectTimeout(properties.connectTimeout())
+                .build();
+
+        JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
+        requestFactory.setReadTimeout(properties.readTimeout());
+
         return builder
                 .baseUrl(properties.baseUrl())
+                .requestFactory(requestFactory)
                 .build();
     }
 
@@ -46,3 +59,4 @@ public class OpenTriviaDBConfig {
         return factory.createClient(IOpenTriviaDBClient.class);
     }
 }
+ 

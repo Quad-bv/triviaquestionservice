@@ -43,10 +43,10 @@ public class QuestionsController {
     })
     public List<QuestionsResponse> getQuestions(
             @RequestParam(defaultValue = "1") @Min(1) @Max(50) int amount,
-            @RequestParam(required = false) Integer category,
+            @RequestParam(required = false) @Min(1) Integer category,
             @RequestParam(required = false) Difficulty difficulty,
             @RequestParam(required = false) QuestionType type,
-            @Parameter(description = "OpenTDB session token (optional). Not usable yet; planned for a future release.")
+            @Parameter(description = "OpenTDB session token (optional).Planned for a future release.")
             @RequestParam(required = false) String token
     ) {
         // Convert HTTP query parameters into the application request model.
