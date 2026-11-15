@@ -44,6 +44,13 @@ public class QuestionsProviderExceptionHandler {
         return problem(HttpStatus.NOT_FOUND, exception);
     }
 
+    @ExceptionHandler(QuestionsProviderBadRequestException.class)
+    public ProblemDetail handleBadRequest(
+            QuestionsProviderBadRequestException exception) {
+
+        return problem(HttpStatus.BAD_REQUEST, exception);
+    }
+
     @ExceptionHandler(QuestionsProviderBadGatewayException.class)
     public ProblemDetail handleBadGateway(
             QuestionsProviderBadGatewayException exception) {
@@ -63,3 +70,4 @@ public class QuestionsProviderExceptionHandler {
     }
 }
 
+ 

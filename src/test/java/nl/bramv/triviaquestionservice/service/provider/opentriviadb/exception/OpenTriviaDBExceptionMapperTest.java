@@ -1,4 +1,3 @@
-
 package nl.bramv.triviaquestionservice.service.provider.opentriviadb.exception;
 
 import nl.bramv.triviaquestionservice.exception.questionsprovider.exceptions.*;
@@ -57,9 +56,9 @@ class OpenTriviaDBExceptionMapperTest {
     static Stream<Arguments> responseCodes() {
         return Stream.of(
                 Arguments.of(1, QuestionsProviderNoResultsException.class),
-                Arguments.of(2, QuestionsProviderBadGatewayException.class),
-                Arguments.of(3, QuestionsProviderBadGatewayException.class),
-                Arguments.of(4, QuestionsProviderBadGatewayException.class),
+                Arguments.of(2, QuestionsProviderBadRequestException.class),
+                Arguments.of(3, QuestionsProviderBadRequestException.class),
+                Arguments.of(4, QuestionsProviderBadRequestException.class),
                 Arguments.of(5, QuestionsProviderRateLimitException.class),
                 Arguments.of(99, QuestionsProviderBadGatewayException.class)
         );
@@ -196,4 +195,3 @@ class OpenTriviaDBExceptionMapperTest {
         );
     }
 }
- 

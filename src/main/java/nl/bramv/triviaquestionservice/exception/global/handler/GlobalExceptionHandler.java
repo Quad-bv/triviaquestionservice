@@ -1,5 +1,6 @@
 package nl.bramv.triviaquestionservice.exception.global.handler;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import nl.bramv.triviaquestionservice.exception.logging.ApplicationExceptionLogger;
 import nl.bramv.triviaquestionservice.exception.logging.LogLevel;
@@ -18,8 +19,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ProblemDetail handleConstraintViolation(ConstraintViolationException exception) {
-        logHandler.log("QuestionsController", LogLevel.WARN, exception);
+    public ProblemDetail handleConstraintViolation(
+            ConstraintViolationException exception,
+            HttpServletRequest request) {
+
+        // Identify the failing endpoint from the request.
+        logHandler.log(request.getMethod() + " " + request.getRequestURI(), LogLevel.WARN, exception);
 
         return ProblemDetail.forStatusAndDetail(
                 HttpStatus.BAD_REQUEST,

@@ -47,6 +47,8 @@ class QuestionsProviderExceptionHandlerTest {
     static Stream<HandlerScenario> handlerScenarios() {
         var badGateway = new QuestionsProviderBadGatewayException(
                 "OpenTriviaDB", "Bad gateway");
+        var badRequest = new QuestionsProviderBadRequestException(
+                "OpenTriviaDB", "Invalid parameters");
         var unavailable = new QuestionsProviderUnavailableException(
                 "OpenTriviaDB", "Unavailable");
         var rateLimit = new QuestionsProviderRateLimitException(
@@ -61,6 +63,11 @@ class QuestionsProviderExceptionHandlerTest {
                         badGateway,
                         HttpStatus.BAD_GATEWAY,
                         handler -> handler.handleBadGateway(badGateway)
+                ),
+                new HandlerScenario(
+                        badRequest,
+                        HttpStatus.BAD_REQUEST,
+                        handler -> handler.handleBadRequest(badRequest)
                 ),
                 new HandlerScenario(
                         unavailable,

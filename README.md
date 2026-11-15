@@ -105,7 +105,7 @@ Errors are returned as RFC 9457 `ProblemDetail` JSON.
 
 | Status | Meaning |
 |---|---|
-| `400` | Invalid or missing request fields. |
+| `400` | Invalid or missing request fields, or a value the provider rejected (for example an unknown category or an invalid session token). |
 | `404` | No questions found for the given filters. |
 | `429` | Open Trivia Database rate limit reached. |
 | `502` | Open Trivia Database returned an error or unusable data. |

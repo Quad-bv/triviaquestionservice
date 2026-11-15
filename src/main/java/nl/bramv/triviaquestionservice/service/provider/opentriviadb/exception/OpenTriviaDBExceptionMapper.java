@@ -60,14 +60,20 @@ public class OpenTriviaDBExceptionMapper {
                     "No questions found by " + providerName
             );
 
-            case 2 -> new QuestionsProviderBadGatewayException(
+            // The caller sent something the provider rejected (for example an unknown category).
+            case 2 -> new QuestionsProviderBadRequestException(
                     providerName,
-                    "Invalid request parameters sent to " + providerName
+                    "The request contains invalid parameters, such as an unknown category."
             );
 
-            case 3, 4 -> new QuestionsProviderBadGatewayException(
+            case 3 -> new QuestionsProviderBadRequestException(
                     providerName,
-                    "Invalid or exhausted session token from " + providerName
+                    "The session token does not exist."
+            );
+
+            case 4 -> new QuestionsProviderBadRequestException(
+                    providerName,
+                    "The session token has returned all possible questions and must be reset."
             );
 
             case 5 -> new QuestionsProviderRateLimitException(
