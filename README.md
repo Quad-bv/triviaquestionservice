@@ -18,6 +18,25 @@ mvn spring-boot:run
 
 The service listens on port `8080` by default.
 
+### Running with Docker
+
+```bash
+docker build -t triviaquestionservice .
+docker run --rm -p 8080:8080 -e APP_HASH_SECRET="<a long random string>" triviaquestionservice
+```
+
+Any setting from the configuration table below can be passed with `-e`. The secret is not stored in the image, so always provide `APP_HASH_SECRET` when starting the container.
+
+### Running with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+`compose.yaml` builds the image, publishes port `8080` and passes the settings through. To override anything, copy `.env.example` to `.env` and uncomment the lines you want. Keep `.env` out of version control.
+
+`APP_HASH_SECRET` is optional here to make local testing easy, but without it the public development secret is used. Set your own secret for anything shared or deployed.
+
 ## Testing the application
 
 ```bash
@@ -30,19 +49,19 @@ Settings are read from `src/main/resources/application.properties` and can be ov
 
 | Environment variable | Default | Description |
 |---|---|---|
-| `APP_HASH_SECRET` | `development-only-secret` | Secret key used to sign and verify answer tokens. **Always set this yourself** (see warning below). |
-| `VERIFICATION_TYPE` | `hashVerification` | Answer verification strategy. |
-| `TRIVIA_PROVIDER` | `opentriviadb` | Questions provider. |
-| `OPENTDB_BASE_URL` | `https://opentdb.com` | Open Trivia Database base URL. |
-| `OPENTDB_PROVIDER_NAME` | `OpenTriviaDB` | Provider name used in logs and error messages. |
-| `OPENTDB_CONNECT_TIMEOUT` | `2s` | Connect timeout for calls to Open Trivia Database. |
-| `OPENTDB_READ_TIMEOUT` | `5s` | Read timeout for calls to Open Trivia Database. |
-| `SERVER_PORT` | `8080` | HTTP port. |
 | `SPRING_APPLICATION_NAME` | `triviaquestionservice` | Application name. |
+| `SERVER_PORT` | `8080` | HTTP port. |
 | `SPRINGDOC_API_DOCS_PATH` | `/v3/api-docs` | OpenAPI JSON path. |
 | `SPRINGDOC_SWAGGER_UI_PATH` | `/swagger-ui.html` | Swagger UI path. |
 | `LOGGING_LEVEL_ROOT` | `INFO` | Root log level. |
 | `LOGGING_LEVEL_APP` | `DEBUG` | Log level for `nl.bramv.triviaquestionservice`. |
+| `TRIVIA_PROVIDER` | `opentriviadb` | Questions provider. |
+| `OPENTDB_PROVIDER_NAME` | `OpenTriviaDB` | Provider name used in logs and error messages. |
+| `OPENTDB_BASE_URL` | `https://opentdb.com` | Open Trivia Database base URL. |
+| `OPENTDB_CONNECT_TIMEOUT` | `2s` | Connect timeout for calls to Open Trivia Database. |
+| `OPENTDB_READ_TIMEOUT` | `5s` | Read timeout for calls to Open Trivia Database. |
+| `VERIFICATION_TYPE` | `hashVerification` | Answer verification strategy. |
+| `APP_HASH_SECRET` | `development-only-secret` | Secret key used to sign and verify answer tokens. **Always set this yourself** (see warning below). |
 
 > **Warning:** if `APP_HASH_SECRET` is not set, the application falls back to the default `development-only-secret`. That value is public, so anyone can forge valid answer tokens against an instance that uses it. Never run a shared or production instance without setting your own secret.
 
