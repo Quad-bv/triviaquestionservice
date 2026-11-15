@@ -24,19 +24,19 @@ public class OpenTriviaDBExceptionMapper {
     }
 
     // The provider returned an HTTP error; inspect the body before falling back to the HTTP status.
-    public QuestionsProviderExceptionI handleHttpException(HttpStatusCodeException exception) {
-        OpenTriviaDBResponse errorResponse = getErrorResponse(exception);
+    public QuestionsProviderException handleHttpException(HttpStatusCodeException exception) {
+        OpenTriviaDBResponse triviaErrorCode = getTriviaErrorCode(exception);
 
-        if (errorResponse != null && isKnownErrorCode(errorResponse.responseCode())) {
-            return handleResponseCode(errorResponse.responseCode());
+        if (triviaErrorCode != null && isKnownErrorCode(triviaErrorCode.responseCode())) {
+            return handleResponseCode(triviaErrorCode.responseCode());
         }
 
         return handleHttpStatus(exception.getStatusCode(), exception);
     }
 
     // No response at all: DNS failure, connection refused, timeout.
-    public QuestionsProviderExceptionI handleResourceAccessException(ResourceAccessException exception) {
-        return new QuestionsProviderUnavailableExceptionI(
+    public QuestionsProviderException handleResourceAccessException(ResourceAccessException exception) {
+        return new QuestionsProviderUnavailableException(
                 providerName,
                 "Could not connect to " + providerName + ".",
                 exception
@@ -44,8 +44,8 @@ public class OpenTriviaDBExceptionMapper {
     }
 
     // Any other client-side error that was not handled above.
-    public QuestionsProviderExceptionI handleRestClientException(RestClientException exception) {
-        return new QuestionsProviderBadGatewayExceptionI(
+    public QuestionsProviderException handleRestClientException(RestClientException exception) {
+        return new QuestionsProviderBadGatewayException(
                 providerName,
                 "Unexpected error communicating with " + providerName + ".",
                 exception
@@ -53,29 +53,35 @@ public class OpenTriviaDBExceptionMapper {
     }
 
     // Maps an OpenTriviaDB response code to an application-level exception.
-    public QuestionsProviderExceptionI handleResponseCode(int responseCode) {
+    public QuestionsProviderException handleResponseCode(int responseCode) {
         return switch (responseCode) {
-            case 1 -> new QuestionsProviderNoResultsExceptionI(
+            case 1 -> new QuestionsProviderNoResultsException(
                     providerName,
                     "No questions found by " + providerName
             );
 
-            case 2 -> new QuestionsProviderBadGatewayExceptionI(
+            // The caller sent something the provider rejected (for example an unknown category).
+            case 2 -> new QuestionsProviderBadRequestException(
                     providerName,
-                    "Invalid request parameters sent to " + providerName
+                    "The request contains invalid parameters, such as an unknown category."
             );
 
-            case 3, 4 -> new QuestionsProviderBadGatewayExceptionI(
+            case 3 -> new QuestionsProviderBadRequestException(
                     providerName,
-                    "Invalid or exhausted session token from " + providerName
+                    "The session token does not exist."
             );
 
-            case 5 -> new QuestionsProviderRateLimitExceptionI(
+            case 4 -> new QuestionsProviderBadRequestException(
+                    providerName,
+                    "The session token has returned all possible questions and must be reset."
+            );
+
+            case 5 -> new QuestionsProviderRateLimitException(
                     providerName,
                     "Rate limit reached for " + providerName
             );
 
-            default -> new QuestionsProviderBadGatewayExceptionI(
+            default -> new QuestionsProviderBadGatewayException(
                     providerName,
                     "Unexpected response code " + responseCode + " from " + providerName
             );
@@ -83,24 +89,24 @@ public class OpenTriviaDBExceptionMapper {
     }
 
     // The provider returned no usable response.
-    public QuestionsProviderExceptionI emptyResponse() {
-        return new QuestionsProviderBadGatewayExceptionI(
+    public QuestionsProviderException emptyResponse() {
+        return new QuestionsProviderBadGatewayException(
                 providerName,
                 providerName + " returned an empty response."
         );
     }
 
     // The provider returned a valid response, but it contained no questions.
-    public QuestionsProviderExceptionI noResults() {
-        return new QuestionsProviderNoResultsExceptionI(
+    public QuestionsProviderException noResults() {
+        return new QuestionsProviderNoResultsException(
                 providerName,
                 "No questions found by " + providerName
         );
     }
 
     // The response structure was valid, but one or more question fields could not be mapped.
-    public QuestionsProviderExceptionI invalidQuestionData(Throwable cause) {
-        return new QuestionsProviderBadGatewayExceptionI(
+    public QuestionsProviderException invalidQuestionData(Throwable cause) {
+        return new QuestionsProviderBadGatewayException(
                 providerName,
                 providerName + " returned question data that could not be understood.",
                 cause
@@ -108,12 +114,12 @@ public class OpenTriviaDBExceptionMapper {
     }
 
     // Uses the HTTP status only when the provider's response body has no usable error code.
-    private QuestionsProviderExceptionI handleHttpStatus(
+    private QuestionsProviderException handleHttpStatus(
             HttpStatusCode statusCode,
             HttpStatusCodeException exception) {
 
         if (statusCode.value() == HttpStatus.TOO_MANY_REQUESTS.value()) {
-            return new QuestionsProviderRateLimitExceptionI(
+            return new QuestionsProviderRateLimitException(
                     providerName,
                     "Rate limit reached for " + providerName,
                     exception
@@ -121,21 +127,21 @@ public class OpenTriviaDBExceptionMapper {
         }
 
         if (statusCode.is5xxServerError()) {
-            return new QuestionsProviderUnavailableExceptionI(
+            return new QuestionsProviderUnavailableException(
                     providerName,
                     "The provider " + providerName + " is unavailable.",
                     exception
             );
         }
 
-        return new QuestionsProviderBadGatewayExceptionI(
+        return new QuestionsProviderBadGatewayException(
                 providerName,
                 "Unexpected HTTP error from " + providerName + ".",
                 exception
         );
     }
 
-    private OpenTriviaDBResponse getErrorResponse(HttpStatusCodeException exception) {
+    private OpenTriviaDBResponse getTriviaErrorCode(HttpStatusCodeException exception) {
         try {
             return exception.getResponseBodyAs(OpenTriviaDBResponse.class);
         } catch (RestClientException ignored) {

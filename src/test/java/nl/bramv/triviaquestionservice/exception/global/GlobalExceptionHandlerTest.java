@@ -1,4 +1,5 @@
 
+
 package nl.bramv.triviaquestionservice.exception.global;
 
 import jakarta.validation.ConstraintViolationException;
@@ -10,13 +11,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class GlobalExceptionHandlerTest {
 
-    private static final String SOURCE = "QuestionsController";
+    private static final String SOURCE = "GET /questions";
 
     private ApplicationExceptionLogger logHandler;
     private GlobalExceptionHandler exceptionHandler;
@@ -40,9 +42,10 @@ class GlobalExceptionHandlerTest {
         // Arrange
         ConstraintViolationException exception =
                 new ConstraintViolationException(message, null);
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/questions");
 
         // Act
-        ProblemDetail result = exceptionHandler.handleConstraintViolation(exception);
+        ProblemDetail result = exceptionHandler.handleConstraintViolation(exception, request);
 
         // Assert
         assertAll(

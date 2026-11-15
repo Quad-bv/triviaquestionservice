@@ -1,13 +1,11 @@
 package nl.bramv.triviaquestionservice.service;
 
-import nl.bramv.triviaquestionservice.model.Question;
 import nl.bramv.triviaquestionservice.model.QuestionsRequest;
 import nl.bramv.triviaquestionservice.model.QuestionsResponse;
 import nl.bramv.triviaquestionservice.service.provider.IQuestionsProvider;
 import nl.bramv.triviaquestionservice.service.mapping.QuestionsResponseMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

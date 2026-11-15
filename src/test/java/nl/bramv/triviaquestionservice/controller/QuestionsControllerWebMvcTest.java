@@ -1,4 +1,3 @@
-
 package nl.bramv.triviaquestionservice.controller;
 
 import nl.bramv.triviaquestionservice.enums.Difficulty;
@@ -95,6 +94,19 @@ class QuestionsControllerWebMvcTest {
         // Act & Assert
         mockMvc.perform(get("/questions")
                         .param("amount", amount))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(questionsService);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "-1", "not-a-number"})
+    void getQuestions_returnsBadRequestForInvalidCategory(String category) throws Exception {
+        // Arrange
+
+        // Act & Assert
+        mockMvc.perform(get("/questions")
+                        .param("category", category))
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(questionsService);

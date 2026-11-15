@@ -1,0 +1,36 @@
+services:
+  trivia:
+    build: .
+    image: triviaquestionservice
+    ports:
+      # The published port follows SERVER_PORT so host and container stay in sync.
+      - "${SERVER_PORT:-8080}:${SERVER_PORT:-8080}"
+    environment:
+      # Optional for local testing. Falls back to the public development secret,
+      # so always set your own value anywhere else.
+      APP_HASH_SECRET: ${APP_HASH_SECRET:-development-only-secret}
+
+      # Application
+      SPRING_APPLICATION_NAME: ${SPRING_APPLICATION_NAME:-triviaquestionservice}
+      SERVER_PORT: ${SERVER_PORT:-8080}
+
+      # OpenAPI documentation
+      SPRINGDOC_API_DOCS_PATH: ${SPRINGDOC_API_DOCS_PATH:-/v3/api-docs}
+      SPRINGDOC_SWAGGER_UI_PATH: ${SPRINGDOC_SWAGGER_UI_PATH:-/swagger-ui.html}
+
+      # Logging
+      LOGGING_LEVEL_ROOT: ${LOGGING_LEVEL_ROOT:-INFO}
+      LOGGING_LEVEL_APP: ${LOGGING_LEVEL_APP:-DEBUG}
+
+      # Questions provider
+      TRIVIA_PROVIDER: ${TRIVIA_PROVIDER:-opentriviadb}
+
+      # Open Trivia DB
+      OPENTDB_PROVIDER_NAME: ${OPENTDB_PROVIDER_NAME:-OpenTriviaDB}
+      OPENTDB_BASE_URL: ${OPENTDB_BASE_URL:-https://opentdb.com}
+      OPENTDB_CONNECT_TIMEOUT: ${OPENTDB_CONNECT_TIMEOUT:-2s}
+      OPENTDB_READ_TIMEOUT: ${OPENTDB_READ_TIMEOUT:-5s}
+
+      # Answer verification
+      VERIFICATION_TYPE: ${VERIFICATION_TYPE:-hashVerification}
+    restart: unless-stopped

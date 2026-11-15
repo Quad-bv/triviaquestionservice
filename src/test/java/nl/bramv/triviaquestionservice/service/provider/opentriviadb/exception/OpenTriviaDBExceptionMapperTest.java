@@ -31,7 +31,9 @@ class OpenTriviaDBExceptionMapperTest {
         // Arrange
         OpenTriviaDBProperties properties = new OpenTriviaDBProperties(
                 "https://opentdb.com",
-                PROVIDER_NAME
+                PROVIDER_NAME,
+                java.time.Duration.ofSeconds(2),
+                java.time.Duration.ofSeconds(5)
         );
 
         exceptionMapper = new OpenTriviaDBExceptionMapper(properties);
@@ -41,10 +43,10 @@ class OpenTriviaDBExceptionMapperTest {
     @MethodSource("responseCodes")
     void handleResponseCode_knownOrUnknownCode_returnsExpectedException(
             int responseCode,
-            Class<? extends QuestionsProviderExceptionI> expectedException
+            Class<? extends QuestionsProviderException> expectedException
     ) {
         // Act
-        QuestionsProviderExceptionI result = exceptionMapper.handleResponseCode(responseCode);
+        QuestionsProviderException result = exceptionMapper.handleResponseCode(responseCode);
 
         // Assert
         assertInstanceOf(expectedException, result);
@@ -53,12 +55,12 @@ class OpenTriviaDBExceptionMapperTest {
 
     static Stream<Arguments> responseCodes() {
         return Stream.of(
-                Arguments.of(1, QuestionsProviderNoResultsExceptionI.class),
-                Arguments.of(2, QuestionsProviderBadGatewayExceptionI.class),
-                Arguments.of(3, QuestionsProviderBadGatewayExceptionI.class),
-                Arguments.of(4, QuestionsProviderBadGatewayExceptionI.class),
-                Arguments.of(5, QuestionsProviderRateLimitExceptionI.class),
-                Arguments.of(99, QuestionsProviderBadGatewayExceptionI.class)
+                Arguments.of(1, QuestionsProviderNoResultsException.class),
+                Arguments.of(2, QuestionsProviderBadRequestException.class),
+                Arguments.of(3, QuestionsProviderBadRequestException.class),
+                Arguments.of(4, QuestionsProviderBadRequestException.class),
+                Arguments.of(5, QuestionsProviderRateLimitException.class),
+                Arguments.of(99, QuestionsProviderBadGatewayException.class)
         );
     }
 
@@ -73,17 +75,17 @@ class OpenTriviaDBExceptionMapperTest {
         when(exception.getStatusCode()).thenReturn(HttpStatus.BAD_GATEWAY);
 
         // Act
-        QuestionsProviderExceptionI result = exceptionMapper.handleHttpException(exception);
+        QuestionsProviderException result = exceptionMapper.handleHttpException(exception);
 
         // Assert
-        assertInstanceOf(QuestionsProviderRateLimitExceptionI.class, result);
+        assertInstanceOf(QuestionsProviderRateLimitException.class, result);
     }
 
     @ParameterizedTest
     @MethodSource("httpStatuses")
     void handleHttpException_unusableResponseBody_usesHttpStatus(
             HttpStatus status,
-            Class<? extends QuestionsProviderExceptionI> expectedException
+            Class<? extends QuestionsProviderException> expectedException
     ) {
         // Arrange
         HttpStatusCodeException exception = mock(HttpStatusCodeException.class);
@@ -92,7 +94,7 @@ class OpenTriviaDBExceptionMapperTest {
         when(exception.getStatusCode()).thenReturn(status);
 
         // Act
-        QuestionsProviderExceptionI result = exceptionMapper.handleHttpException(exception);
+        QuestionsProviderException result = exceptionMapper.handleHttpException(exception);
 
         // Assert
         assertInstanceOf(expectedException, result);
@@ -100,9 +102,9 @@ class OpenTriviaDBExceptionMapperTest {
 
     static Stream<Arguments> httpStatuses() {
         return Stream.of(
-                Arguments.of(HttpStatus.TOO_MANY_REQUESTS, QuestionsProviderRateLimitExceptionI.class),
-                Arguments.of(HttpStatus.SERVICE_UNAVAILABLE, QuestionsProviderUnavailableExceptionI.class),
-                Arguments.of(HttpStatus.BAD_REQUEST, QuestionsProviderBadGatewayExceptionI.class)
+                Arguments.of(HttpStatus.TOO_MANY_REQUESTS, QuestionsProviderRateLimitException.class),
+                Arguments.of(HttpStatus.SERVICE_UNAVAILABLE, QuestionsProviderUnavailableException.class),
+                Arguments.of(HttpStatus.BAD_REQUEST, QuestionsProviderBadGatewayException.class)
         );
     }
 
@@ -117,10 +119,10 @@ class OpenTriviaDBExceptionMapperTest {
         when(exception.getStatusCode()).thenReturn(HttpStatus.SERVICE_UNAVAILABLE);
 
         // Act
-        QuestionsProviderExceptionI result = exceptionMapper.handleHttpException(exception);
+        QuestionsProviderException result = exceptionMapper.handleHttpException(exception);
 
         // Assert
-        assertInstanceOf(QuestionsProviderUnavailableExceptionI.class, result);
+        assertInstanceOf(QuestionsProviderUnavailableException.class, result);
     }
 
     @Test
@@ -132,12 +134,12 @@ class OpenTriviaDBExceptionMapperTest {
         );
 
         // Act
-        QuestionsProviderExceptionI result =
+        QuestionsProviderException result =
                 exceptionMapper.handleResourceAccessException(exception);
 
         // Assert
         assertAll(
-                () -> assertInstanceOf(QuestionsProviderUnavailableExceptionI.class, result),
+                () -> assertInstanceOf(QuestionsProviderUnavailableException.class, result),
                 () -> assertEquals(PROVIDER_NAME, result.getSource()),
                 () -> assertSame(exception, result.getCause())
         );
@@ -149,12 +151,12 @@ class OpenTriviaDBExceptionMapperTest {
         RestClientException exception = new RestClientException("Unexpected client error");
 
         // Act
-        QuestionsProviderExceptionI result =
+        QuestionsProviderException result =
                 exceptionMapper.handleRestClientException(exception);
 
         // Assert
         assertAll(
-                () -> assertInstanceOf(QuestionsProviderBadGatewayExceptionI.class, result),
+                () -> assertInstanceOf(QuestionsProviderBadGatewayException.class, result),
                 () -> assertEquals(PROVIDER_NAME, result.getSource()),
                 () -> assertSame(exception, result.getCause())
         );
@@ -163,19 +165,19 @@ class OpenTriviaDBExceptionMapperTest {
     @Test
     void emptyResponse_returnsBadGatewayException() {
         // Act
-        QuestionsProviderExceptionI result = exceptionMapper.emptyResponse();
+        QuestionsProviderException result = exceptionMapper.emptyResponse();
 
         // Assert
-        assertInstanceOf(QuestionsProviderBadGatewayExceptionI.class, result);
+        assertInstanceOf(QuestionsProviderBadGatewayException.class, result);
     }
 
     @Test
     void noResults_returnsNoResultsException() {
         // Act
-        QuestionsProviderExceptionI result = exceptionMapper.noResults();
+        QuestionsProviderException result = exceptionMapper.noResults();
 
         // Assert
-        assertInstanceOf(QuestionsProviderNoResultsExceptionI.class, result);
+        assertInstanceOf(QuestionsProviderNoResultsException.class, result);
     }
 
     @Test
@@ -184,11 +186,11 @@ class OpenTriviaDBExceptionMapperTest {
         IllegalArgumentException cause = new IllegalArgumentException("Invalid question type");
 
         // Act
-        QuestionsProviderExceptionI result = exceptionMapper.invalidQuestionData(cause);
+        QuestionsProviderException result = exceptionMapper.invalidQuestionData(cause);
 
         // Assert
         assertAll(
-                () -> assertInstanceOf(QuestionsProviderBadGatewayExceptionI.class, result),
+                () -> assertInstanceOf(QuestionsProviderBadGatewayException.class, result),
                 () -> assertSame(cause, result.getCause())
         );
     }

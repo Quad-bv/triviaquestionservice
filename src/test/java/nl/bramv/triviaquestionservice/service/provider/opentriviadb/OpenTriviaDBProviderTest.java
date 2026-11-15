@@ -37,7 +37,11 @@ class OpenTriviaDBProviderTest {
         client = mock(IOpenTriviaDBClient.class);
 
         OpenTriviaDBProperties properties =
-                new OpenTriviaDBProperties("https://opentdb.com", "OpenTriviaDB");
+                new OpenTriviaDBProperties(
+                        "https://opentdb.com",
+                        "OpenTriviaDB",
+                        java.time.Duration.ofSeconds(2),
+                        java.time.Duration.ofSeconds(5));
 
         OpenTriviaDBQuestionMapper questionMapper = new OpenTriviaDBQuestionMapper();
         OpenTriviaDBExceptionMapper exceptionMapper =
@@ -102,7 +106,7 @@ class OpenTriviaDBProviderTest {
     @MethodSource("errorResponseCodes")
     void getQuestions_errorResponseCode_throwsExpectedException(
             int responseCode,
-            Class<? extends QuestionsProviderExceptionI> expectedException
+            Class<? extends QuestionsProviderException> expectedException
     ) {
         // Arrange
         QuestionsRequest request = new QuestionsRequest(1, null, null, null, null);
@@ -119,12 +123,12 @@ class OpenTriviaDBProviderTest {
 
     static Stream<Arguments> errorResponseCodes() {
         return Stream.of(
-                Arguments.of(1, QuestionsProviderNoResultsExceptionI.class),
-                Arguments.of(2, QuestionsProviderBadGatewayExceptionI.class),
-                Arguments.of(3, QuestionsProviderBadGatewayExceptionI.class),
-                Arguments.of(4, QuestionsProviderBadGatewayExceptionI.class),
-                Arguments.of(5, QuestionsProviderRateLimitExceptionI.class),
-                Arguments.of(99, QuestionsProviderBadGatewayExceptionI.class)
+                Arguments.of(1, QuestionsProviderNoResultsException.class),
+                Arguments.of(2, QuestionsProviderBadRequestException.class),
+                Arguments.of(3, QuestionsProviderBadRequestException.class),
+                Arguments.of(4, QuestionsProviderBadRequestException.class),
+                Arguments.of(5, QuestionsProviderRateLimitException.class),
+                Arguments.of(99, QuestionsProviderBadGatewayException.class)
         );
     }
 
@@ -137,7 +141,7 @@ class OpenTriviaDBProviderTest {
 
         // Act & Assert
         assertThrows(
-                QuestionsProviderBadGatewayExceptionI.class,
+                QuestionsProviderBadGatewayException.class,
                 () -> provider.getQuestions(request)
         );
     }
@@ -152,7 +156,7 @@ class OpenTriviaDBProviderTest {
 
         // Act & Assert
         assertThrows(
-                QuestionsProviderBadGatewayExceptionI.class,
+                QuestionsProviderBadGatewayException.class,
                 () -> provider.getQuestions(request)
         );
     }
@@ -167,7 +171,7 @@ class OpenTriviaDBProviderTest {
 
         // Act & Assert
         assertThrows(
-                QuestionsProviderNoResultsExceptionI.class,
+                QuestionsProviderNoResultsException.class,
                 () -> provider.getQuestions(request)
         );
     }
@@ -187,7 +191,7 @@ class OpenTriviaDBProviderTest {
 
         // Act & Assert
         assertThrows(
-                QuestionsProviderBadGatewayExceptionI.class,
+                QuestionsProviderBadGatewayException.class,
                 () -> provider.getQuestions(request)
         );
     }
@@ -205,7 +209,7 @@ class OpenTriviaDBProviderTest {
 
         // Act & Assert
         assertThrows(
-                QuestionsProviderUnavailableExceptionI.class,
+                QuestionsProviderUnavailableException.class,
                 () -> provider.getQuestions(request)
         );
     }
@@ -220,7 +224,7 @@ class OpenTriviaDBProviderTest {
 
         // Act & Assert
         assertThrows(
-                QuestionsProviderUnavailableExceptionI.class,
+                QuestionsProviderUnavailableException.class,
                 () -> provider.getQuestions(request)
         );
     }
@@ -235,8 +239,9 @@ class OpenTriviaDBProviderTest {
 
         // Act & Assert
         assertThrows(
-                QuestionsProviderBadGatewayExceptionI.class,
+                QuestionsProviderBadGatewayException.class,
                 () -> provider.getQuestions(request)
         );
     }
 }
+ 

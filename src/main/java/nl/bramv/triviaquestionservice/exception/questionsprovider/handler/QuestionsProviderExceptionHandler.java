@@ -18,41 +18,48 @@ public class QuestionsProviderExceptionHandler {
     }
 
     // Handles provider exceptions that do not have a more specific HTTP mapping.
-    @ExceptionHandler(QuestionsProviderExceptionI.class)
-    public ProblemDetail handleProviderFailure(QuestionsProviderExceptionI exception) {
+    @ExceptionHandler(QuestionsProviderException.class)
+    public ProblemDetail handleProviderFailure(QuestionsProviderException exception) {
         return problem(HttpStatus.BAD_GATEWAY, exception);
     }
 
-    @ExceptionHandler(QuestionsProviderUnavailableExceptionI.class)
+    @ExceptionHandler(QuestionsProviderUnavailableException.class)
     public ProblemDetail handleUnavailable(
-            QuestionsProviderUnavailableExceptionI exception) {
+            QuestionsProviderUnavailableException exception) {
 
         return problem(HttpStatus.SERVICE_UNAVAILABLE, exception);
     }
 
-    @ExceptionHandler(QuestionsProviderRateLimitExceptionI.class)
+    @ExceptionHandler(QuestionsProviderRateLimitException.class)
     public ProblemDetail handleRateLimit(
-            QuestionsProviderRateLimitExceptionI exception) {
+            QuestionsProviderRateLimitException exception) {
 
         return problem(HttpStatus.TOO_MANY_REQUESTS, exception);
     }
 
-    @ExceptionHandler(QuestionsProviderNoResultsExceptionI.class)
+    @ExceptionHandler(QuestionsProviderNoResultsException.class)
     public ProblemDetail handleNoResults(
-            QuestionsProviderNoResultsExceptionI exception) {
+            QuestionsProviderNoResultsException exception) {
 
         return problem(HttpStatus.NOT_FOUND, exception);
     }
 
-    @ExceptionHandler(QuestionsProviderBadGatewayExceptionI.class)
+    @ExceptionHandler(QuestionsProviderBadRequestException.class)
+    public ProblemDetail handleBadRequest(
+            QuestionsProviderBadRequestException exception) {
+
+        return problem(HttpStatus.BAD_REQUEST, exception);
+    }
+
+    @ExceptionHandler(QuestionsProviderBadGatewayException.class)
     public ProblemDetail handleBadGateway(
-            QuestionsProviderBadGatewayExceptionI exception) {
+            QuestionsProviderBadGatewayException exception) {
 
         return problem(HttpStatus.BAD_GATEWAY, exception);
     }
 
     // Logs the exception and creates the corresponding HTTP error response.
-    private ProblemDetail problem(HttpStatus status, QuestionsProviderExceptionI exception) {
+    private ProblemDetail problem(HttpStatus status, QuestionsProviderException exception) {
 
         logHandler.log(exception, exception);
 
@@ -63,3 +70,4 @@ public class QuestionsProviderExceptionHandler {
     }
 }
 
+ 

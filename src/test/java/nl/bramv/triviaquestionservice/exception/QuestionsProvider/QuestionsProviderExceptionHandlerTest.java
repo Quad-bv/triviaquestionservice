@@ -45,15 +45,17 @@ class QuestionsProviderExceptionHandlerTest {
     }
 
     static Stream<HandlerScenario> handlerScenarios() {
-        var badGateway = new QuestionsProviderBadGatewayExceptionI(
+        var badGateway = new QuestionsProviderBadGatewayException(
                 "OpenTriviaDB", "Bad gateway");
-        var unavailable = new QuestionsProviderUnavailableExceptionI(
+        var badRequest = new QuestionsProviderBadRequestException(
+                "OpenTriviaDB", "Invalid parameters");
+        var unavailable = new QuestionsProviderUnavailableException(
                 "OpenTriviaDB", "Unavailable");
-        var rateLimit = new QuestionsProviderRateLimitExceptionI(
+        var rateLimit = new QuestionsProviderRateLimitException(
                 "OpenTriviaDB", "Rate limit reached");
-        var noResults = new QuestionsProviderNoResultsExceptionI(
+        var noResults = new QuestionsProviderNoResultsException(
                 "OpenTriviaDB", "No results found");
-        var generic = new GenericProviderExceptionI(
+        var generic = new GenericProviderException(
                 "OpenTriviaDB", "Unexpected provider failure");
 
         return Stream.of(
@@ -61,6 +63,11 @@ class QuestionsProviderExceptionHandlerTest {
                         badGateway,
                         HttpStatus.BAD_GATEWAY,
                         handler -> handler.handleBadGateway(badGateway)
+                ),
+                new HandlerScenario(
+                        badRequest,
+                        HttpStatus.BAD_REQUEST,
+                        handler -> handler.handleBadRequest(badRequest)
                 ),
                 new HandlerScenario(
                         unavailable,
@@ -86,13 +93,13 @@ class QuestionsProviderExceptionHandlerTest {
     }
 
     private record HandlerScenario(
-            QuestionsProviderExceptionI exception,
+            QuestionsProviderException exception,
             HttpStatus expectedStatus,
             Function<QuestionsProviderExceptionHandler, ProblemDetail> handler
     ) {}
 
-    private static class GenericProviderExceptionI extends QuestionsProviderExceptionI {
-        GenericProviderExceptionI(String providerName, String message) {
+    private static class GenericProviderException extends QuestionsProviderException {
+        GenericProviderException(String providerName, String message) {
             super(providerName, message, null, null);
         }
     }
