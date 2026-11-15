@@ -1,38 +1,39 @@
 package nl.bramv.triviaquestionservice.startup;
 
+import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
+@Profile({"dev", "debug"})
 public class StartupInfo implements ApplicationRunner {
 
-    private final ApplicationContext context;
+    private static final Logger log = LoggerFactory.getLogger(StartupInfo.class);
 
-    public StartupInfo(ApplicationContext context) {
+    private final ServletWebServerApplicationContext context;
+
+    public StartupInfo(ServletWebServerApplicationContext context) {
         this.context = context;
     }
 
     @Override
-    public void run(ApplicationArguments args) {
-
-        if (!(context instanceof ServletWebServerApplicationContext webContext)) {
-            System.out.println("No servlet web server context available.");
-            return;
-        }
-
-        int port = webContext.getWebServer().getPort();
+    public void run(@NonNull ApplicationArguments args) {
+        int port = Objects.requireNonNull(context.getWebServer()).getPort();
         String baseUrl = "http://localhost:" + port;
 
-        System.out.println("");
-        System.out.println("======================================");
-        System.out.println("       TRIVIA API IS RUNNING!");
-        System.out.println("======================================");
-        System.out.println(" API:     " + baseUrl);
-        System.out.println(" Swagger: " + baseUrl + "/swagger-ui/index.html");
-        System.out.println("======================================");
-        System.out.println("");
+        log.info("");
+        log.info("======================================");
+        log.info("       TRIVIA API IS RUNNING!");
+        log.info("======================================");
+        log.info(" API:     {}", baseUrl);
+        log.info(" Swagger: {}/swagger-ui/index.html", baseUrl);
+        log.info("======================================");
     }
 }

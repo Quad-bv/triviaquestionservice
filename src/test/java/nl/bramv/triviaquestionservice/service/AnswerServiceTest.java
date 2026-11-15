@@ -1,50 +1,52 @@
+
 package nl.bramv.triviaquestionservice.service;
 
 import nl.bramv.triviaquestionservice.model.CheckAnswerResponse;
 import nl.bramv.triviaquestionservice.model.CheckAnswersRequest;
+import nl.bramv.triviaquestionservice.service.helper.IAnswerVerificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-public class AnswerServiceTest {
-    private HashService hashService;
+class AnswerServiceTest {
+
+    private IAnswerVerificationService answerVerificationService;
     private AnswerService answerService;
 
     @BeforeEach
     void setUp() {
-        hashService = mock(HashService.class);
-        answerService = new AnswerService(hashService);
+        answerVerificationService = mock(IAnswerVerificationService.class);
+        answerService = new AnswerService(answerVerificationService);
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "hash-of-4, hash-of-4, true",
-            "hash-of-4, hash-of-5, false"
-    })
-    void checkAnswer_returnsWhetherAnswerIsCorrect(
-            String hashedAnswer,
-            String verificationToken,
-            boolean expected
-    ) {
-
+    @ValueSource(booleans = {true, false})
+    void checkAnswer_returnsVerificationResult(boolean correct) {
         // Arrange
         CheckAnswersRequest request = new CheckAnswersRequest(
-                "4",
-                verificationToken
+                "What is the capital of France?",
+                "Paris",
+                "verification-token"
         );
 
-        when(hashService.hash("4")).thenReturn(hashedAnswer);
+        when(answerVerificationService.checkAnswer(
+                request.question(),
+                request.selectedAnswer(),
+                request.verificationToken()
+        )).thenReturn(correct);
 
         // Act
         CheckAnswerResponse result = answerService.checkAnswer(request);
 
         // Assert
-        assertEquals(expected, result.correct());
-        verify(hashService).hash("4");
+        assertEquals(new CheckAnswerResponse(correct), result);
+        verify(answerVerificationService).checkAnswer(
+                request.question(),
+                request.selectedAnswer(),
+                request.verificationToken()
+        );
     }
 }

@@ -1,112 +1,117 @@
+
 package nl.bramv.triviaquestionservice.service;
 
-import nl.bramv.triviaquestionservice.dto.TriviaQuestionApiDTO;
+import nl.bramv.triviaquestionservice.enums.Difficulty;
+import nl.bramv.triviaquestionservice.enums.QuestionType;
+import nl.bramv.triviaquestionservice.model.Question;
+import nl.bramv.triviaquestionservice.model.QuestionsRequest;
 import nl.bramv.triviaquestionservice.model.QuestionsResponse;
+import nl.bramv.triviaquestionservice.service.mapping.QuestionsResponseMapper;
+import nl.bramv.triviaquestionservice.service.provider.IQuestionsProvider;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class QuestionsServiceTest {
+class QuestionsServiceTest {
 
-    private TriviaDBService triviaDBService;
-    private HashService hashService;
+    private IQuestionsProvider provider;
+    private QuestionsResponseMapper responseMapper;
     private QuestionsService questionsService;
-
-    private TriviaQuestionApiDTO mathQuestion() {
-        return new TriviaQuestionApiDTO(
-                "multiple",
-                "easy",
-                "General Knowledge",
-                "What is 2 + 2?",
-                "4",
-                List.of("3", "5", "6")
-        );
-    }
 
     @BeforeEach
     void setUp() {
-        triviaDBService = mock(TriviaDBService.class);
-        hashService = mock(HashService.class);
-        questionsService = new QuestionsService(triviaDBService, hashService);
-    }
-
-    @Test
-    void get_mapsQuestionFields_andRequestsTheGivenAmount() {
-
-        // Arrange
-        when(triviaDBService.fetchQuestions(1)).thenReturn(List.of(mathQuestion()));
-
-        // Act
-        List<QuestionsResponse> result = questionsService.get(1);
-
-        // Assert
-        assertEquals(1, result.size());
-
-        QuestionsResponse response = result.getFirst();
-        assertEquals("multiple", response.type());
-        assertEquals("easy", response.difficulty());
-        assertEquals("General Knowledge", response.category());
-        assertEquals("What is 2 + 2?", response.question());
-
-        verify(triviaDBService).fetchQuestions(1);
+        provider = mock(IQuestionsProvider.class);
+        responseMapper = mock(QuestionsResponseMapper.class);
+        questionsService = new QuestionsService(provider, responseMapper);
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1, 2, 5, 10, 25, 50})
-    void get_returnsOneResponsePerRequestedQuestion(int amount) {
+    @MethodSource("questionScenarios")
+    void get_returnsMappedResponses(QuestionScenario scenario) {
+        // Arrange
+        when(provider.getQuestions(scenario.request())).thenReturn(scenario.questions());
 
-        // Arrange: the same test question, repeated `amount` times
-        when(triviaDBService.fetchQuestions(amount))
-                .thenReturn(Collections.nCopies(amount, mathQuestion()));
+        for (int i = 0; i < scenario.questions().size(); i++) {
+            when(responseMapper.toResponse(scenario.questions().get(i)))
+                    .thenReturn(scenario.expectedResponses().get(i));
+        }
 
         // Act
-        List<QuestionsResponse> result = questionsService.get(amount);
+        List<QuestionsResponse> result = questionsService.get(scenario.request());
 
         // Assert
-        assertEquals(amount, result.size());
-        assertTrue(result.stream()
-                .allMatch(response -> response.question().equals("What is 2 + 2?")));
+        assertEquals(scenario.expectedResponses(), result);
+        verify(provider).getQuestions(scenario.request());
 
-        verify(triviaDBService).fetchQuestions(amount);
+        for (Question question : scenario.questions()) {
+            verify(responseMapper).toResponse(question);
+        }
+    }
+
+    private record QuestionScenario(
+            QuestionsRequest request,
+            List<Question> questions,
+            List<QuestionsResponse> expectedResponses
+    ) {}
+
+    static Stream<QuestionScenario> questionScenarios() {
+        Question firstQuestion = new Question(
+                QuestionType.MULTIPLE, Difficulty.HARD,
+                "General Knowledge", "What is the capital of France?",
+                "Paris", List.of("London", "Berlin", "Madrid")
+        );
+
+        QuestionsResponse firstResponse = new QuestionsResponse(
+                QuestionType.MULTIPLE, Difficulty.HARD,
+                "General Knowledge", "What is the capital of France?",
+                "token-1", List.of("Paris", "London", "Berlin", "Madrid")
+        );
+
+        Question secondQuestion = new Question(
+                QuestionType.BOOLEAN, Difficulty.EASY,
+                "General Knowledge", "The Earth is round.",
+                "True", List.of("False")
+        );
+
+        QuestionsResponse secondResponse = new QuestionsResponse(
+                QuestionType.BOOLEAN, Difficulty.EASY,
+                "General Knowledge", "The Earth is round.",
+                "token-2", List.of("True", "False")
+        );
+
+        return Stream.of(
+                new QuestionScenario(
+                        new QuestionsRequest(1, 9, Difficulty.HARD, QuestionType.MULTIPLE, null),
+                        List.of(firstQuestion),
+                        List.of(firstResponse)
+                ),
+                new QuestionScenario(
+                        new QuestionsRequest(2, null, null, null, null),
+                        List.of(firstQuestion, secondQuestion),
+                        List.of(firstResponse, secondResponse)
+                )
+        );
     }
 
     @Test
-    void get_usesHashOfCorrectAnswer_asVerificationToken() {
-
+    void get_emptyProviderResult_returnsEmptyList() {
         // Arrange
-        when(hashService.hash("4")).thenReturn("hash-of-4");
-        when(triviaDBService.fetchQuestions(1)).thenReturn(List.of(mathQuestion()));
+        QuestionsRequest request = new QuestionsRequest(1, null, null, null, null);
+        when(provider.getQuestions(request)).thenReturn(List.of());
 
         // Act
-        QuestionsResponse response = questionsService.get(1).getFirst();
+        List<QuestionsResponse> result = questionsService.get(request);
 
         // Assert
-        assertEquals("hash-of-4", response.verificationToken());
-    }
-
-    @Test
-    void get_includesCorrectAndIncorrectAnswers() {
-
-        // Arrange
-        when(triviaDBService.fetchQuestions(1)).thenReturn(List.of(mathQuestion()));
-
-        // Act
-        List<String> answers = questionsService.get(1).getFirst().answers();
-
-        // Assert
-        assertEquals(4, answers.size());
-        assertTrue(answers.containsAll(List.of("3", "5", "6", "4")));
+        assertTrue(result.isEmpty());
+        verify(provider).getQuestions(request);
+        verifyNoInteractions(responseMapper);
     }
 }
-
-

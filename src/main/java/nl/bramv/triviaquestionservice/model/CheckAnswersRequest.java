@@ -3,6 +3,8 @@ package nl.bramv.triviaquestionservice.model;
 import jakarta.validation.constraints.NotBlank;
 
 public record CheckAnswersRequest(
+        @NotBlank(message = "question is required")
+        String question,
         @NotBlank(message = "selectedAnswer is required")
         String selectedAnswer,
         @NotBlank(message = "verificationToken is required")
