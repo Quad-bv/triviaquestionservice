@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -18,15 +19,24 @@ public class StartupInfo implements ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(StartupInfo.class);
 
     private final ServletWebServerApplicationContext context;
+    private final Environment environment;
 
-    public StartupInfo(ServletWebServerApplicationContext context) {
+    public StartupInfo(
+            ServletWebServerApplicationContext context,
+            Environment environment
+    ) {
         this.context = context;
+        this.environment = environment;
     }
 
     @Override
     public void run(@NonNull ApplicationArguments args) {
         int port = Objects.requireNonNull(context.getWebServer()).getPort();
-        String baseUrl = "http://localhost:" + port;
+        String contextPath = environment.getProperty(
+                "server.servlet.context-path", ""
+        );
+
+        String baseUrl = "http://localhost:" + port + contextPath;
 
         log.info("");
         log.info("======================================");

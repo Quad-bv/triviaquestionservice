@@ -13,21 +13,23 @@ The application retrieves trivia questions from the [Open Trivia Database](https
 
 ```bash
 export APP_HASH_SECRET="<a long random string>"
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
-The service listens on port `8080` by default.
+The service listens on port `8080` by default and uses `/api/v1` as its context path.
 
-### Running with Docker
+## Running with Docker
 
 ```bash
 docker build -t triviaquestionservice .
-docker run --rm -p 8080:8080 -e APP_HASH_SECRET="<a long random string>" triviaquestionservice
+docker run --rm -p 8080:8080 \
+  -e APP_HASH_SECRET="<a long random string>" \
+  triviaquestionservice
 ```
 
 Any setting from the configuration table below can be passed with `-e`. The secret is not stored in the image, so always provide `APP_HASH_SECRET` when starting the container.
 
-### Running with Docker Compose
+## Running with Docker Compose
 
 ```bash
 docker compose up --build
@@ -40,7 +42,7 @@ docker compose up --build
 ## Testing the application
 
 ```bash
-mvn clean test
+./mvnw clean test
 ```
 
 ## Configuration
@@ -51,6 +53,7 @@ Settings are read from `src/main/resources/application.properties` and can be ov
 |---|---|---|
 | `SPRING_APPLICATION_NAME` | `triviaquestionservice` | Application name. |
 | `SERVER_PORT` | `8080` | HTTP port. |
+| `SERVER_CONTEXT_PATH` | `/api/v1` | Base context path for all endpoints. |
 | `SPRINGDOC_API_DOCS_PATH` | `/v3/api-docs` | OpenAPI JSON path. |
 | `SPRINGDOC_SWAGGER_UI_PATH` | `/swagger-ui.html` | Swagger UI path. |
 | `LOGGING_LEVEL_ROOT` | `INFO` | Root log level. |
@@ -67,9 +70,11 @@ Settings are read from `src/main/resources/application.properties` and can be ov
 
 ## API
 
-Interactive documentation is generated with OpenAPI and available through [Swagger UI](http://localhost:8080/swagger-ui/index.html) while the application is running.
+All API endpoints are prefixed with `/api/v1` by default.
 
-### `GET /questions`
+Interactive documentation is generated with OpenAPI and available through [Swagger UI](http://localhost:8080/api/v1/swagger-ui/index.html) while the application is running.
+
+### `GET /api/v1/questions`
 
 Returns trivia questions. The correct answer is **not** included; each question carries a `verificationToken` instead.
 
@@ -98,7 +103,7 @@ Example response:
 
 Answers are shuffled on every request.
 
-### `POST /checkanswers`
+### `POST /api/v1/checkanswers`
 
 Checks a submitted answer against the question's verification token.
 
@@ -144,11 +149,11 @@ Known limitations:
 
 ## Architecture
 
-```
-controller      HTTP endpoints and request validation
-service         Application logic, answer verification, response mapping
-service/provider  IQuestionsProvider and the Open Trivia Database implementation
-exception       Provider exceptions, HTTP mapping and logging
+```text
+controller         HTTP endpoints and request validation
+service            Application logic, answer verification, response mapping
+service/provider   IQuestionsProvider and the Open Trivia Database implementation
+exception          Provider exceptions, HTTP mapping and logging
 ```
 
 The questions provider and answer verification strategy are both behind interfaces (`IQuestionsProvider`, `IAnswerVerificationService`) and selected through configuration, so alternative implementations can be added without touching the controllers.
