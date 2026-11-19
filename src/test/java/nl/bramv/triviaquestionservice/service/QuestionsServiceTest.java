@@ -1,8 +1,8 @@
 
 package nl.bramv.triviaquestionservice.service;
 
-import nl.bramv.triviaquestionservice.enums.Difficulty;
-import nl.bramv.triviaquestionservice.enums.QuestionType;
+import nl.bramv.triviaquestionservice.model.enums.Difficulty;
+import nl.bramv.triviaquestionservice.model.enums.QuestionType;
 import nl.bramv.triviaquestionservice.model.Question;
 import nl.bramv.triviaquestionservice.model.QuestionsRequest;
 import nl.bramv.triviaquestionservice.model.QuestionsResponse;

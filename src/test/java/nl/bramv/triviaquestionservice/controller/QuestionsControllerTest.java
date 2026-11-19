@@ -1,7 +1,7 @@
 package nl.bramv.triviaquestionservice.controller;
 
-import nl.bramv.triviaquestionservice.enums.Difficulty;
-import nl.bramv.triviaquestionservice.enums.QuestionType;
+import nl.bramv.triviaquestionservice.model.enums.Difficulty;
+import nl.bramv.triviaquestionservice.model.enums.QuestionType;
 import nl.bramv.triviaquestionservice.model.QuestionsRequest;
 import nl.bramv.triviaquestionservice.model.QuestionsResponse;
 import nl.bramv.triviaquestionservice.service.QuestionsService;

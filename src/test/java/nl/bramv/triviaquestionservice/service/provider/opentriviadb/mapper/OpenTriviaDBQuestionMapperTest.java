@@ -2,6 +2,8 @@
 package nl.bramv.triviaquestionservice.service.provider.opentriviadb.mapper;
 
 import nl.bramv.triviaquestionservice.model.Question;
+import nl.bramv.triviaquestionservice.model.enums.Difficulty;
+import nl.bramv.triviaquestionservice.model.enums.QuestionType;
 import nl.bramv.triviaquestionservice.service.provider.opentriviadb.model.OpenTriviaDBQuestion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,8 +42,8 @@ class OpenTriviaDBQuestionMapperTest {
 
         // Assert
         assertAll(
-                () -> assertEquals(nl.bramv.triviaquestionservice.enums.QuestionType.MULTIPLE, result.type()),
-                () -> assertEquals(nl.bramv.triviaquestionservice.enums.Difficulty.EASY, result.difficulty()),
+                () -> assertEquals(QuestionType.MULTIPLE, result.type()),
+                () -> assertEquals(Difficulty.EASY, result.difficulty()),
                 () -> assertEquals("General Knowledge", result.category()),
                 () -> assertEquals("What is the capital of France?", result.question()),
                 () -> assertEquals("Paris", result.correctAnswer()),
