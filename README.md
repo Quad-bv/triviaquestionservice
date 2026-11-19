@@ -54,6 +54,9 @@ Settings are read from `src/main/resources/application.properties` and can be ov
 | `SPRING_APPLICATION_NAME` | `triviaquestionservice` | Application name. |
 | `SERVER_PORT` | `8080` | HTTP port. |
 | `SERVER_CONTEXT_PATH` | `/api/v1` | Base context path for all endpoints. |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:*` | Allowed origins. By default, any port on `localhost` is allowed. |
+| `CORS_ALLOWED_METHODS` | `GET,POST,OPTIONS` | Allowed HTTP methods for cross-origin requests. |
+| `CORS_ALLOWED_HEADERS` | `*` | Allowed request headers for cross-origin requests. |
 | `SPRINGDOC_API_DOCS_PATH` | `/v3/api-docs` | OpenAPI JSON path. |
 | `SPRINGDOC_SWAGGER_UI_PATH` | `/swagger-ui.html` | Swagger UI path. |
 | `LOGGING_LEVEL_ROOT` | `INFO` | Root log level. |
@@ -65,6 +68,8 @@ Settings are read from `src/main/resources/application.properties` and can be ov
 | `OPENTDB_READ_TIMEOUT` | `5s` | Read timeout for calls to Open Trivia Database. |
 | `VERIFICATION_TYPE` | `hashVerification` | Answer verification strategy. |
 | `APP_HASH_SECRET` | `development-only-secret` | Secret key used to sign and verify answer tokens. **Always set this yourself** (see warning below). |
+
+> **CORS note:** By default, `CORS_ALLOWED_ORIGINS` is set to `http://localhost:*`. This allows local frontend development servers running on any port, such as `http://localhost:5173` or `http://localhost:3000`. It does not allow other hostnames. For a deployed application, explicitly configure the trusted frontend origin(s), preferably using HTTPS.
 
 > **Warning:** if `APP_HASH_SECRET` is not set, the application falls back to the default `development-only-secret`. That value is public, so anyone can forge valid answer tokens against an instance that uses it. Never run a shared or production instance without setting your own secret.
 
